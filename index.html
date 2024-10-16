@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Leaflet JS</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>   
+</head>
+<body>
+
+    <h1>Teste</h1>
+    <div id="mapa" style="height: 400px;"></div>
+
+    <script>
+        var mapa = L.map('mapa').setView([-25.4284, -49.2733], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(mapa);
+
+        let marker, circle;
+
+        function success(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            // Remove o marcador e o círculo se já existirem
+            if (marker) {
+                mapa.removeLayer(marker);
+            }
+            if (circle) {
+                mapa.removeLayer(circle);
+            }
+
+            // Adiciona um novo marcador e círculo
+            marker = L.marker([lat, lon]).addTo(mapa);
+            circle = L.circle([lat, lon], { radius: accuracy }).addTo(mapa);
+
+            // Ajusta a vista do mapa para incluir o círculo
+            mapa.fitBounds(circle.getBounds());
+        }
+
+        function error(err) {
+            if (err.code === 1) {
+                alert("É necessário autorizar o acesso à localização.");
+            } else {
+                alert("Não foi possível acessar a localização atual.");
+            }
+        }
+
+        // Inicia a geolocalização
+        navigator.geolocation.watchPosition(success, error);
+    </script>
+
+</body>
+</html>
